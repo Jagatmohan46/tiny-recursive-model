@@ -5,6 +5,8 @@
 
 Implementation of [Tiny Recursive Model](https://arxiv.org/abs/2510.04871) (TRM), improvement to [HRM](https://github.com/lucidrains/hrm) from Sapient AI, by [Alexia Jolicoeur-Martineau](https://ajolicoeur.wordpress.com/about/)
 
+Official repository is [here](https://github.com/SamsungSAILMontreal/TinyRecursiveModels)
+
 ## Citations
 
 ```bibtex
