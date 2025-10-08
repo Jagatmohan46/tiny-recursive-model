@@ -1,13 +1,22 @@
 import pytest
+param = pytest.mark.parametrize
 
 import torch
 
-def test_trm():
+@param('use_self_attn', (False, True))
+def test_trm(
+    use_self_attn
+):
     from tiny_recursive_model.trm import TinyRecursiveModel
-    from tiny_recursive_model.mlp_mixer_1d import MLPMixer1D
+
     from torch.optim import AdamW
 
-    network = MLPMixer1D(dim = 512, depth = 2, seq_len = 1024)
+    if use_self_attn:
+        from x_transformers import Encoder
+        network = Encoder(dim = 512, depth = 2)
+    else:
+        from tiny_recursive_model.mlp_mixer_1d import MLPMixer1D
+        network = MLPMixer1D(dim = 512, depth = 2, seq_len = 1024)
 
     trm = TinyRecursiveModel(
         dim = 512,
