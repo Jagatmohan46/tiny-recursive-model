@@ -6,7 +6,7 @@ from torch import nn, cat, arange, tensor
 import torch.nn.functional as F
 from torch.nn import Module, ModuleList
 
-from einops import rearrange, repeat, pack, unpack
+from einops import rearrange, repeat, reduce, pack, unpack
 from einops.layers.torch import Reduce, Rearrange
 
 # network related
@@ -202,15 +202,20 @@ class TinyRecursiveModel(Module):
 
         # calculate loss if labels passed in
 
-        loss = F.cross_entropy(rearrange(pred, 'b n l -> b l n'), labels)
+        loss = F.cross_entropy(rearrange(pred, 'b n l -> b l n'), labels, reduction = 'none')
+        loss = reduce(loss, 'b ... -> b', 'mean')
 
         is_all_correct = (pred.argmax(dim = -1) == labels).all(dim = -1)
 
-        halt_loss = F.binary_cross_entropy(halt_prob, is_all_correct.float())
+        halt_loss = F.binary_cross_entropy(halt_prob, is_all_correct.float(), reduction = 'none')
 
         # total loss and loss breakdown
 
-        total_loss = loss + halt_loss * self.halt_loss_weight
+        total_loss = (
+            loss +
+            halt_loss * self.halt_loss_weight
+        )
+
         losses = (loss, halt_loss)
 
-        return (total_loss, losses, *return_package)
+        return (total_loss.mean(), losses, *return_package)
