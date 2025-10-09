@@ -89,7 +89,8 @@ class Trainer(Module):
         self.ema_model = EMA(
             model,
             beta = ema_decay_rate,
-            update_model_with_ema_every = switch_ema_every
+            update_model_with_ema_every = switch_ema_every,
+            forward_method_names = ('predict',)
         )
 
         self.halt_prob_thres = halt_prob_thres
@@ -108,7 +109,7 @@ class Trainer(Module):
 
                     loss, (main_loss, halt_loss), outputs, latents, pred, halt = self.model(dataset_input, outputs, latents, labels = dataset_output)
 
-                    print(f'[{epoch} ({recurrent_step} / {self.max_recurrent_steps})] loss: {main_loss.item():.3f} | halt loss: {halt_loss.item():.3f}')
+                    print(f'[{epoch} ({recurrent_step} / {self.max_recurrent_steps})] loss: {main_loss.mean().item():.3f} | halt loss: {halt_loss.mean().item():.3f}')
 
                     loss.backward()
 

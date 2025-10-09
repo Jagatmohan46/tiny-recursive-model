@@ -39,6 +39,8 @@ def test_trm(
         optim.step()
         optim.zero_grad()
 
+    pred_answer, exit_indices = trm.predict(seq)
+
 def test_trainer():
     from torch.utils.data import Dataset
     from tiny_recursive_model.mlp_mixer_1d import MLPMixer1D

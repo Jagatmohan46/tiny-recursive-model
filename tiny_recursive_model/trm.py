@@ -2,7 +2,7 @@ from __future__ import annotations
 from contextlib import nullcontext
 
 import torch
-from torch import nn
+from torch import nn, cat, arange, tensor
 import torch.nn.functional as F
 from torch.nn import Module, ModuleList
 
@@ -21,6 +21,9 @@ def exists(v):
 
 def default(v, d):
     return v if exists(v) else d
+
+def is_empty(t):
+    return t.numel() == 0
 
 # classes
 
@@ -59,6 +62,10 @@ class TinyRecursiveModel(Module):
         )
 
         self.halt_loss_weight = halt_loss_weight
+
+    @property
+    def device(self):
+        return next(self.parameters()).device
 
     def refine_latent_then_output_once(
         self,
@@ -103,6 +110,74 @@ class TinyRecursiveModel(Module):
 
         return outputs, latents
 
+    @torch.no_grad()
+    def predict(
+        self,
+        seq,
+        halt_prob_thres = 0.5,
+        num_deep_refinement_steps = 12
+    ):
+        batch = seq.shape[0]
+
+        inputs = self.input_embed(seq)
+
+        outputs, latents = self.get_initial()
+
+        # active batch indices, the step it exited at, and the final output predictions
+
+        active_batch_indices = arange(batch, device = self.device, dtype = torch.float32)
+
+        preds = []
+        exited_step_indices = []
+        exited_batch_indices = []
+
+        for i in range(num_deep_refinement_steps):
+            step = i + 1
+            is_last = step == num_deep_refinement_steps
+
+            outputs, latents = self.deep_refinement(inputs, outputs, latents)
+
+            halt_prob = self.to_halt_pred(outputs)
+
+            should_halt = (halt_prob >= halt_prob_thres) | is_last
+
+            if not should_halt.any():
+                continue
+
+            # append to exited predictions
+
+            pred = self.to_pred(outputs[should_halt])
+            preds.append(pred)
+
+            # append the step at which early halted
+
+            exited_step_indices.extend([step] * should_halt.sum().item())
+
+            # append indices for sorting back
+
+            exited_batch_indices.append(active_batch_indices[should_halt])
+
+            if is_last:
+                continue
+
+            # ready for next round
+
+            inputs = inputs[~should_halt]
+            outputs = outputs[~should_halt]
+            latents = latents[~should_halt]
+            active_batch_indices = active_batch_indices[~should_halt]
+
+            if is_empty(outputs):
+                break
+
+        preds = cat(preds).argmax(dim = -1)
+        exited_step_indices = tensor(exited_step_indices)
+
+        exited_batch_indices = cat(exited_batch_indices)
+        sort_indices = exited_batch_indices.argsort(dim = -1)
+
+        return preds[sort_indices], exited_step_indices[sort_indices]
+
     def forward(
         self,
         seq,
@@ -116,11 +191,11 @@ class TinyRecursiveModel(Module):
 
         pred = self.to_pred(outputs)
 
-        should_halt = self.to_halt_pred(outputs)
+        halt_prob = self.to_halt_pred(outputs)
 
         outputs, latents = outputs.detach(), latents.detach()
 
-        return_package = (outputs, latents, pred, should_halt)
+        return_package = (outputs, latents, pred, halt_prob)
 
         if not exists(labels):
             return return_package
@@ -131,7 +206,7 @@ class TinyRecursiveModel(Module):
 
         is_all_correct = (pred.argmax(dim = -1) == labels).all(dim = -1)
 
-        halt_loss = F.binary_cross_entropy(should_halt, is_all_correct.float())
+        halt_loss = F.binary_cross_entropy(halt_prob, is_all_correct.float())
 
         # total loss and loss breakdown
 
