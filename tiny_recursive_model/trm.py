@@ -5,20 +5,14 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 from torch.nn import Module, ModuleList
-from torch.optim import AdamW
-from torch.utils.data import Dataset, DataLoader
 
-from einops import rearrange, repeat
+from einops import rearrange, repeat, pack, unpack
 from einops.layers.torch import Reduce, Rearrange
 
 # network related
 
 from x_transformers import Encoder
 from tiny_recursive_model.mlp_mixer_1d import MLPMixer1D
-
-# ema - apparently greatly helped with results
-
-from ema_pytorch import EMA
 
 # helpers
 
@@ -27,12 +21,6 @@ def exists(v):
 
 def default(v, d):
     return v if exists(v) else d
-
-def range_from_one(n):
-    return range(1, n + 1)
-
-def is_empty(t):
-    return t.numel() == 0
 
 # classes
 
@@ -151,82 +139,3 @@ class TinyRecursiveModel(Module):
         losses = (loss, halt_loss)
 
         return (total_loss, losses, *return_package)
-
-# trainer
-
-class Trainer(Module):
-    def __init__(
-        self,
-        model: TinyRecursiveModel | Module,
-        dataset: Dataset,
-        optim_klass = AdamW,
-        learning_rate = 1e-4,
-        weight_decay = 1.,
-        batch_size = 16,
-        epochs = 2,
-        halt_prob_thres = 0.5,
-        max_recurrent_steps = 12,
-        ema_decay_rate = 0.999,
-        ema_update_model_with_ema_every = 10000
-    ):
-        super().__init__()
-
-        self.batch_size = batch_size
-        self.epochs = epochs
-
-        self.dataset = dataset
-        self.dataloader = dataloader = DataLoader(self.dataset, batch_size = self.batch_size, shuffle = True)
-
-        self.optim = optim_klass(
-            model.parameters(),
-            lr = learning_rate,
-            weight_decay = weight_decay
-        )
-
-        self.model = model
-
-        self.ema_model = EMA(
-            model,
-            beta = ema_decay_rate,
-            update_model_with_ema_every = ema_update_model_with_ema_every
-        )
-
-        self.halt_prob_thres = halt_prob_thres
-
-        self.max_recurrent_steps = max_recurrent_steps
-
-    def forward(self):
-
-        for epoch in range_from_one(self.epochs):
-
-            for dataset_input, dataset_output in self.dataloader:
-
-                outputs, latents = self.model.get_initial()
-
-                for recurrent_step in range_from_one(self.max_recurrent_steps):
-
-                    loss, (main_loss, halt_loss), outputs, latents, pred, halt = self.model(dataset_input, outputs, latents, labels = dataset_output)
-
-                    print(f'[{epoch} ({recurrent_step} / {self.max_recurrent_steps})] loss: {main_loss.item():.3f} | halt loss: {halt_loss.item():.3f}')
-
-                    loss.backward()
-
-                    self.optim.step()
-                    self.optim.zero_grad()
-
-                    self.ema_model.update()
-
-                    # handle halting
-
-                    halt_mask = halt >= self.halt_prob_thres
-
-                    if not halt_mask.any():
-                        continue
-
-                    outputs = outputs[~halt_mask]
-                    latents = latents[~halt_mask]
-                    dataset_input = dataset_input[~halt_mask]
-                    dataset_output = dataset_output[~halt_mask]
-
-                    if is_empty(outputs):
-                        break
