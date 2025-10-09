@@ -1,3 +1,4 @@
 from tiny_recursive_model.trm import (
-    TinyRecursiveModel
+    TinyRecursiveModel,
+    Trainer
 )

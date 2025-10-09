@@ -2,13 +2,12 @@ import pytest
 param = pytest.mark.parametrize
 
 import torch
+from tiny_recursive_model.trm import TinyRecursiveModel, Trainer
 
 @param('use_self_attn', (False, True))
 def test_trm(
     use_self_attn
 ):
-    from tiny_recursive_model.trm import TinyRecursiveModel
-
     from torch.optim import AdamW
 
     if use_self_attn:
@@ -37,3 +36,35 @@ def test_trm(
         loss.backward()
         optim.step()
         optim.zero_grad()
+
+def test_trainer():
+    from torch.utils.data import Dataset
+    from tiny_recursive_model.mlp_mixer_1d import MLPMixer1D
+
+    trm = TinyRecursiveModel(
+        dim = 16,
+        num_tokens = 256,
+        network = MLPMixer1D(
+            dim = 16,
+            depth = 2,
+            seq_len = 256
+        ),
+    )
+
+    class MockDataset(Dataset):
+        def __len__(self):
+            return 16
+
+        def __getitem__(self, idx):
+            inp = torch.randint(0, 256, (256,))
+            out = torch.randint(0, 256, (256,))
+            return inp, out
+
+    trainer = Trainer(
+        trm,
+        MockDataset(),
+        epochs = 1,
+        batch_size = 16
+    )
+
+    trainer()
