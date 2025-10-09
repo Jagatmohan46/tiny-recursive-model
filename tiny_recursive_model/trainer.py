@@ -66,7 +66,7 @@ class Trainer(Module):
         halt_prob_thres = 0.5,
         max_recurrent_steps = 12,
         ema_decay_rate = 0.999,
-        ema_update_model_with_ema_every = 10000
+        switch_ema_every = 10000 # switch ema https://arxiv.org/abs/2402.09240
     ):
         super().__init__()
 
@@ -87,7 +87,7 @@ class Trainer(Module):
         self.ema_model = EMA(
             model,
             beta = ema_decay_rate,
-            update_model_with_ema_every = ema_update_model_with_ema_every
+            update_model_with_ema_every = switch_ema_every
         )
 
         self.halt_prob_thres = halt_prob_thres
