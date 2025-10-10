@@ -220,4 +220,4 @@ class TinyRecursiveModel(Module):
 
         losses = (loss, halt_loss)
 
-        return (total_loss.mean(), losses, *return_package)
+        return (total_loss.sum(), losses, *return_package)

@@ -86,7 +86,7 @@ class Trainer(Module):
 
         self.optim = optim_klass(
             model.parameters(),
-            lr = learning_rate,
+            lr = learning_rate / (batch_size * max_recurrent_steps),
             weight_decay = weight_decay
         )
 
