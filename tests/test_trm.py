@@ -68,7 +68,10 @@ def test_trainer():
         trm,
         MockDataset(),
         epochs = 1,
-        batch_size = 16
+        batch_size = 16,
+        cpu = True
     )
 
     trainer()
+
+    pred_answer, exit_indices = trm.predict(torch.randint(0, 256, (1, 256)))

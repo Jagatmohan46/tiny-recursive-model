@@ -7,6 +7,8 @@ from torch.utils.data import Dataset, DataLoader
 
 from einops import pack, unpack
 
+from accelerate import Accelerator
+
 # ema - apparently greatly helped with results
 
 from ema_pytorch import EMA
@@ -68,9 +70,13 @@ class Trainer(Module):
         halt_prob_thres = 0.5,
         max_recurrent_steps = 12,
         ema_decay_rate = 0.999,
-        switch_ema_every = 10000 # switch ema https://arxiv.org/abs/2402.09240
+        switch_ema_every = 10000,           # switch ema https://arxiv.org/abs/2402.09240
+        accelerate_kwargs: dict = dict(),
+        cpu = False
     ):
         super().__init__()
+
+        self.accelerator  = Accelerator(**accelerate_kwargs, cpu = cpu)
 
         self.batch_size = batch_size
         self.epochs = epochs
@@ -86,16 +92,27 @@ class Trainer(Module):
 
         self.model = model
 
-        self.ema_model = EMA(
-            model,
-            beta = ema_decay_rate,
-            update_model_with_ema_every = switch_ema_every,
-            forward_method_names = ('predict',)
-        )
+        # ema model
+
+        self.ema_model = None
+
+        if self.accelerator.is_main_process:
+            self.ema_model = EMA(
+                model,
+                beta = ema_decay_rate,
+                update_model_with_ema_every = switch_ema_every,
+                forward_method_names = ('predict',)
+            )
+
+        # recurrent and act related variables
 
         self.halt_prob_thres = halt_prob_thres
 
         self.max_recurrent_steps = max_recurrent_steps
+
+        # prepare maybe distributed
+
+        self.model, self.optim, self.dataloader = self.accelerator.prepare(self.model, self.optim, self.dataloader)
 
     def forward(self):
 
@@ -109,14 +126,15 @@ class Trainer(Module):
 
                     loss, (main_loss, halt_loss), outputs, latents, pred, halt = self.model(dataset_input, outputs, latents, labels = dataset_output)
 
-                    print(f'[{epoch} ({recurrent_step} / {self.max_recurrent_steps})] loss: {main_loss.mean().item():.3f} | halt loss: {halt_loss.mean().item():.3f}')
+                    self.accelerator.print(f'[{epoch} ({recurrent_step} / {self.max_recurrent_steps})] loss: {main_loss.mean().item():.3f} | halt loss: {halt_loss.mean().item():.3f}')
 
-                    loss.backward()
+                    self.accelerator.backward(loss)
 
                     self.optim.step()
                     self.optim.zero_grad()
 
-                    self.ema_model.update()
+                    if self.accelerator.is_main_process:
+                        self.ema_model.update()
 
                     # handle halting
 
@@ -132,3 +150,8 @@ class Trainer(Module):
 
                     if is_empty(outputs):
                         break
+
+        self.accelerator.print('complete')
+
+        if self.accelerator.is_main_process:
+            self.ema_model.copy_params_from_ema_to_model()
