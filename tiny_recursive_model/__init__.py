@@ -5,3 +5,7 @@ from tiny_recursive_model.trm import (
 from tiny_recursive_model.trainer import (
     Trainer
 )
+
+from tiny_recursive_model.mlp_mixer_1d import (
+    MLPMixer1D
+)
