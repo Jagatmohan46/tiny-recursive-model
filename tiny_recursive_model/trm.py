@@ -25,6 +25,9 @@ def default(v, d):
 def is_empty(t):
     return t.numel() == 0
 
+def range_from_one(n):
+    return range(1, n + 1)
+
 # classes
 
 class TinyRecursiveModel(Module):
@@ -98,11 +101,11 @@ class TinyRecursiveModel(Module):
         latents,   # (b n d)
     ):
 
-        for i in range(self.num_refinement_blocks):
+        for step in range_from_one(self.num_refinement_blocks):
 
             # only last round of refinement receives gradients
 
-            is_last = i == (self.num_refinement_blocks - 1)
+            is_last = step == self.num_refinement_blocks
             context = torch.no_grad if not is_last else nullcontext
 
             with context():
@@ -115,7 +118,7 @@ class TinyRecursiveModel(Module):
         self,
         seq,
         halt_prob_thres = 0.5,
-        num_deep_refinement_steps = 12
+        max_deep_refinement_steps = 12
     ):
         batch = seq.shape[0]
 
@@ -131,9 +134,8 @@ class TinyRecursiveModel(Module):
         exited_step_indices = []
         exited_batch_indices = []
 
-        for i in range(num_deep_refinement_steps):
-            step = i + 1
-            is_last = step == num_deep_refinement_steps
+        for step in range_from_one(max_deep_refinement_steps):
+            is_last = step == max_deep_refinement_steps
 
             outputs, latents = self.deep_refinement(inputs, outputs, latents)
 

@@ -31,6 +31,8 @@ trm = TinyRecursiveModel(
     ),
 )
 
+# mock dataset
+
 from torch.utils.data import Dataset
 class MockDataset(Dataset):
     def __len__(self):
@@ -41,9 +43,13 @@ class MockDataset(Dataset):
         out = torch.randint(0, 256, (256,))
         return inp, out
 
+mock_dataset = MockDataset()
+
+# trainer
+
 trainer = Trainer(
     trm,
-    MockDataset(),
+    mock_dataset,
     epochs = 1,
     batch_size = 16,
     cpu = True
@@ -51,9 +57,18 @@ trainer = Trainer(
 
 trainer()
 
-pred_answer, exit_indices = trm.predict(torch.randint(0, 256, (1, 256)), halt_prob_thres = 0.1)
+# inference
+
+pred_answer, exit_indices = trm.predict(
+    torch.randint(0, 256, (1, 256)),
+    max_deep_refinement_steps = 12,
+    halt_prob_thres = 0.1
+)
+
+# save to collection of specialized networks for tool call
 
 torch.save(trm.state_dict(), 'saved-trm.pt')
+
 ```
 
 ## Citations
