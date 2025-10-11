@@ -70,6 +70,12 @@ class TinyRecursiveModel(Module):
     def device(self):
         return next(self.parameters()).device
 
+    def get_initial(self):
+        outputs = self.output_init_embed
+        latents = self.latent_init_embed
+
+        return outputs, latents
+
     def refine_latent_then_output_once(
         self,
         inputs,     # (b n d)
@@ -85,12 +91,6 @@ class TinyRecursiveModel(Module):
             latents = self.network(outputs + latents + inputs)
 
         outputs = self.network(outputs + latents)
-
-        return outputs, latents
-
-    def get_initial(self):
-        outputs = self.output_init_embed
-        latents = self.latent_init_embed
 
         return outputs, latents
 
