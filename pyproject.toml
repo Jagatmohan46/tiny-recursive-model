@@ -24,6 +24,7 @@ classifiers=[
 
 dependencies = [
     "accelerate",
+    "adam-atan2-pytorch>=0.2.0",
     "einops>=0.8.1",
     "ema-pytorch",
     "torch>=2.4",

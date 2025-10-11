@@ -15,6 +15,8 @@ from ema_pytorch import EMA
 
 from tiny_recursive_model.trm import TinyRecursiveModel
 
+from adam_atan2_pytorch import MuonAdamAtan2
+
 # helpers
 
 def range_from_one(n):
@@ -24,38 +26,6 @@ def is_empty(t):
     return t.numel() == 0
 
 # trainer
-
-def newtonschulz5(
-    t,
-    steps = 5,
-    eps = 1e-7,
-    coefs = (3.4445, -4.7750, 2.0315)
-):
-    if t.ndim <= 3:
-        return t
-
-    shape = t.shape
-    should_transpose = shape[-2] > shape[-1]
-
-    if should_transpose:
-        t = t.transpose(-1, -2)
-
-    t, packed_shape = pack([t], '* i j')
-    t = t / t.norm(dim = (-1, -2), keepdim = True).clamp(min = eps)
-
-    a, b, c = coefs
-
-    for _ in range(steps):
-        A = t @ t.transpose(-1, -2)
-        B = b * A + c * A @ A
-        t = a * t + B @ t
-
-    t, = unpack(t, packed_shape, '* i j')
-
-    if should_transpose:
-        t = t.transpose(-1, -2)
-
-    return t
 
 class Trainer(Module):
     def __init__(
