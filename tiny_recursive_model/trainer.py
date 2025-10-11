@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import torch
 from torch.nn import Module
-from torch.optim import AdamW
+from torch.optim import AdamW, Optimizer
+from torch.optim.lr_scheduler import LambdaLR
 from torch.utils.data import Dataset, DataLoader
 
 from einops import pack, unpack
@@ -19,6 +20,9 @@ from adam_atan2_pytorch import MuonAdamAtan2
 
 # helpers
 
+def exists(v):
+    return v is not None
+
 def range_from_one(n):
     return range(1, n + 1)
 
@@ -33,12 +37,14 @@ class Trainer(Module):
         model: TinyRecursiveModel | Module,
         dataset: Dataset,
         optim_klass = AdamW,
+        optim: Optimizer | None = None,
         learning_rate = 1e-4,
         weight_decay = 1.,
         batch_size = 16,
         epochs = 2,
         halt_prob_thres = 0.5,
         max_recurrent_steps = 12,
+        warmup_steps = 2000,
         ema_decay_rate = 0.999,
         switch_ema_every = 10000,           # switch ema https://arxiv.org/abs/2402.09240
         accelerate_kwargs: dict = dict(),
@@ -51,14 +57,27 @@ class Trainer(Module):
         self.batch_size = batch_size
         self.epochs = epochs
 
+        # data
+
         self.dataset = dataset
         self.dataloader = dataloader = DataLoader(self.dataset, batch_size = self.batch_size, shuffle = True)
 
-        self.optim = optim_klass(
-            model.parameters(),
-            lr = learning_rate / (batch_size * max_recurrent_steps),
-            weight_decay = weight_decay
-        )
+        # optim
+
+        if not exists(optim):
+            optim = optim_klass(
+                model.parameters(),
+                lr = learning_rate / (batch_size * max_recurrent_steps),
+                weight_decay = weight_decay
+            )
+
+        self.optim = optim
+
+        # scheduler
+
+        self.scheduler = LambdaLR(self.optim, lambda step: min((step + 1) / warmup_steps, 1.0))
+
+        # model
 
         self.model = model
 
@@ -82,7 +101,7 @@ class Trainer(Module):
 
         # prepare maybe distributed
 
-        self.model, self.optim, self.dataloader = self.accelerator.prepare(self.model, self.optim, self.dataloader)
+        self.model, self.optim, self.dataloader, self.scheduler = self.accelerator.prepare(self.model, self.optim, self.dataloader, self.scheduler)
 
     def forward(self):
 
@@ -102,6 +121,8 @@ class Trainer(Module):
 
                     self.optim.step()
                     self.optim.zero_grad()
+
+                    self.scheduler.step()
 
                     if self.accelerator.is_main_process:
                         self.ema_model.update()
