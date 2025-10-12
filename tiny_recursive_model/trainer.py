@@ -18,6 +18,8 @@ from tiny_recursive_model.trm import TinyRecursiveModel
 
 from adam_atan2_pytorch import MuonAdamAtan2
 
+from x_transformers import Encoder
+
 # helpers
 
 def exists(v):
@@ -39,6 +41,7 @@ class Trainer(Module):
         optim_klass = AdamW,
         optim: Optimizer | None = None,
         learning_rate = 1e-4,
+        muon_learning_rate = 1e-3,
         weight_decay = 1.,
         batch_size = 16,
         epochs = 2,
@@ -65,11 +68,21 @@ class Trainer(Module):
         # optim
 
         if not exists(optim):
-            optim = optim_klass(
-                model.parameters(),
-                lr = learning_rate / (batch_size * max_recurrent_steps),
-                weight_decay = weight_decay
-            )
+
+            if isinstance(model.network, Encoder):
+                optim = MuonAdamAtan2(
+                    model.muon_parameters(),
+                    model.parameters(),
+                    lr = learning_rate / (batch_size * max_recurrent_steps),
+                    muon_lr = muon_learning_rate / (batch_size * max_recurrent_steps),
+                    weight_decay = weight_decay
+                )
+            else:
+                optim = optim_klass(
+                    model.parameters(),
+                    lr = learning_rate / (batch_size * max_recurrent_steps),
+                    weight_decay = weight_decay
+                )
 
         self.optim = optim
 
