@@ -7,8 +7,10 @@ from tiny_recursive_model.trm import TinyRecursiveModel
 from tiny_recursive_model.trainer import Trainer
 
 @param('use_self_attn', (False, True))
+@param('registers', (0, 4))
 def test_trm(
-    use_self_attn
+    use_self_attn,
+    registers
 ):
     from torch.optim import AdamW
 
@@ -17,11 +19,12 @@ def test_trm(
         network = Encoder(dim = 512, depth = 2)
     else:
         from tiny_recursive_model.mlp_mixer_1d import MLPMixer1D
-        network = MLPMixer1D(dim = 512, depth = 2, seq_len = 1024)
+        network = MLPMixer1D(dim = 512, depth = 2, seq_len = 1024 + registers)
 
     trm = TinyRecursiveModel(
         dim = 512,
         num_tokens = 256,
+        num_register_tokens = registers,
         network = network
     )
 

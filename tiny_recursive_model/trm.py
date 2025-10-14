@@ -39,7 +39,8 @@ class TinyRecursiveModel(Module):
         network: Module,
         num_refinement_blocks = 3,   # T in paper
         num_latent_refinements = 6,  # n in paper - 1 output refinement per N latent refinements
-        halt_loss_weight = 1.
+        halt_loss_weight = 1.,
+        num_register_tokens = 0
     ):
         super().__init__()
         assert num_refinement_blocks > 1
@@ -52,6 +53,10 @@ class TinyRecursiveModel(Module):
 
         self.num_latent_refinements = num_latent_refinements
         self.num_refinement_blocks = num_refinement_blocks
+
+        # register tokens for the self attend version
+
+        self.register_tokens = nn.Parameter(torch.randn(num_register_tokens, dim) * 1e-2)
 
         # prediction heads
 
@@ -75,6 +80,22 @@ class TinyRecursiveModel(Module):
         latents = self.latent_init_embed
 
         return outputs, latents
+
+    def embed_inputs_with_registers(
+        self,
+        seq
+    ):
+        batch = seq.shape[0]
+
+        inputs = self.input_embed(seq)
+
+        # maybe registers
+
+        registers = repeat(self.register_tokens, 'n d -> b n d', b = batch)
+
+        inputs, packed_shape = pack([registers, inputs], 'b * d')
+
+        return inputs, packed_shape
 
     def refine_latent_then_output_once(
         self,
@@ -122,7 +143,9 @@ class TinyRecursiveModel(Module):
     ):
         batch = seq.shape[0]
 
-        inputs = self.input_embed(seq)
+        inputs, packed_shape = self.embed_inputs_with_registers(seq)
+
+        # initial outputs and latents
 
         outputs, latents = self.get_initial()
 
@@ -146,9 +169,13 @@ class TinyRecursiveModel(Module):
             if not should_halt.any():
                 continue
 
+            # maybe remove registers
+
+            registers, outputs_for_pred = unpack(outputs, packed_shape, 'b * d')
+
             # append to exited predictions
 
-            pred = self.to_pred(outputs[should_halt])
+            pred = self.to_pred(outputs_for_pred[should_halt])
             preds.append(pred)
 
             # append the step at which early halted
@@ -187,11 +214,14 @@ class TinyRecursiveModel(Module):
         latents,
         labels = None
     ):
-        inputs = self.input_embed(seq)
+
+        inputs, packed_shape = self.embed_inputs_with_registers(seq)
 
         outputs, latents = self.deep_refinement(inputs, outputs, latents)
 
-        pred = self.to_pred(outputs)
+        registers, outputs_for_pred = unpack(outputs, packed_shape, 'b * d')
+
+        pred = self.to_pred(outputs_for_pred)
 
         halt_prob = self.to_halt_pred(outputs)
 

@@ -71,7 +71,7 @@ class Trainer(Module):
 
             if isinstance(model.network, Encoder):
                 optim = MuonAdamAtan2(
-                    model.muon_parameters(),
+                    model.network.muon_parameters(),
                     model.parameters(),
                     lr = learning_rate / (batch_size * max_recurrent_steps),
                     muon_lr = muon_learning_rate / (batch_size * max_recurrent_steps),
