@@ -78,3 +78,36 @@ def test_trainer():
     trainer()
 
     pred_answer, exit_indices = trm.predict(torch.randint(0, 256, (1, 256)))
+
+def test_gpt():
+    from torch.utils.data import Dataset
+    from x_transformers import Decoder
+
+    trm = TinyRecursiveModel(
+        dim = 16,
+        num_tokens = 256,
+        network = Decoder(
+            dim = 16,
+            depth = 2
+        ),
+    )
+
+    class MockDataset(Dataset):
+        def __len__(self):
+            return 16
+
+        def __getitem__(self, idx):
+            seq = torch.randint(0, 256, (257,))
+            return seq[:-1], seq[1:]
+
+    trainer = Trainer(
+        trm,
+        MockDataset(),
+        epochs = 1,
+        batch_size = 16,
+        cpu = True
+    )
+
+    trainer()
+
+    pred_answer, exit_indices = trm.predict(torch.randint(0, 256, (1, 256)))

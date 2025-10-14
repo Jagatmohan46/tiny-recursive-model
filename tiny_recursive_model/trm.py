@@ -11,7 +11,6 @@ from einops.layers.torch import Reduce, Rearrange
 
 # network related
 
-from x_transformers import Encoder
 from tiny_recursive_model.mlp_mixer_1d import MLPMixer1D
 
 # helpers

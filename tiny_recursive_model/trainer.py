@@ -18,7 +18,7 @@ from tiny_recursive_model.trm import TinyRecursiveModel
 
 from adam_atan2_pytorch import MuonAdamAtan2
 
-from x_transformers import Encoder
+from x_transformers import Encoder, Decoder
 
 # helpers
 
@@ -69,7 +69,7 @@ class Trainer(Module):
 
         if not exists(optim):
 
-            if isinstance(model.network, Encoder):
+            if isinstance(model.network, (Encoder, Decoder)):
                 optim = MuonAdamAtan2(
                     model.network.muon_parameters(),
                     model.parameters(),
